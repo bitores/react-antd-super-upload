@@ -20,5 +20,6 @@
 |         maxWidth | `number`   | `0`      | xxx |
 |         maxHeight | `number`   | `0`      | xxx |
 |         enCrop | `boolean`   | `false`      | 图片上传时开启裁剪 |
-|         filter | `array`   | `[]`      | The item of filter similar as `{name: 'xx', fn: Function}` |
+|         filter | `array`   | `[]`      | 值类似 `{name: 'xx', fn: Function}` |
+|         max | `number`   | `0`      | 图片个数限制 |
 |         其它 |    |       | 其它属性同 `antd upload` |

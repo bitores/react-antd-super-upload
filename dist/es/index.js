@@ -586,7 +586,10 @@ var Uploader = function (_Component) {
               } else {
                 needShowButton = false;
               }
-              fileList.splice(max);
+              if (max !== 0) {
+                fileList.splice(max);
+              }
+
               _onChange && _onChange(fileList);
               _this3.setState({
                 fileList: fileList,
@@ -683,10 +686,13 @@ Uploader.propTypes = {
   //
   fileType: PropTypes.string,
   size: PropTypes.number,
+  max: PropTypes.number,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
   maxWidth: PropTypes.number,
   maxHeight: PropTypes.number,
+  enCrop: PropTypes.bool,
+  filter: PropTypes.array,
 
   //crop
   cropWidth: PropTypes.number,
@@ -706,10 +712,13 @@ Uploader.defaultProps = {
   //
   fileType: '',
   size: 0,
+  max: 0,
   minWidth: 0,
   minHeight: 0,
   maxWidth: 0,
   maxHeight: 0,
+  enCrop: false,
+  filter: [],
   // crop
   cropWidth: 100,
   cropHeight: 100,

@@ -313,7 +313,10 @@ export default class Uploader extends Component {
           } else {
             needShowButton = false;
           }
-          fileList.splice(max);
+          if (max !== 0) {
+            fileList.splice(max);
+          }
+
           onChange && onChange(fileList)
           this.setState({
             fileList: fileList,
@@ -408,6 +411,7 @@ Uploader.propTypes = {
   //
   fileType: PropTypes.string,
   size: PropTypes.number,
+  max: PropTypes.number,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
   maxWidth: PropTypes.number,
@@ -433,6 +437,7 @@ Uploader.defaultProps = {
   //
   fileType: '',
   size: 0,
+  max: 0,
   minWidth: 0,
   minHeight: 0,
   maxWidth: 0,
