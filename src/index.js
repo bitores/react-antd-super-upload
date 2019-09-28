@@ -299,11 +299,14 @@ export default class Uploader extends Component {
       onRemove,
       // crop
       cropModalTitle, cropModalWidth, cropResize, cropResizeAndDrag,
+      enDrag = false,
       ...uploadProp
     } = this.props;
 
+    let UploadComponent = enDrag ? Dragger : Upload;
+
     return <Fragment>
-      <Upload
+      <UploadComponent
         ref={this.uploadRef}
         fileList={fileList}
         onChange={({ fileList }) => {
@@ -376,7 +379,7 @@ export default class Uploader extends Component {
         {...uploadProp}
       >
         {showButton && children}
-      </Upload>
+      </UploadComponent>
       <Modal
         visible={cropModalVisible}
         width={cropModalWidth}
@@ -417,6 +420,7 @@ Uploader.propTypes = {
   maxWidth: PropTypes.number,
   maxHeight: PropTypes.number,
   enCrop: PropTypes.bool,
+  enDrag: PropTypes.bool,
   filter: PropTypes.array,
 
   //crop
@@ -443,6 +447,7 @@ Uploader.defaultProps = {
   maxWidth: 0,
   maxHeight: 0,
   enCrop: false,
+  enDrag: false,
   filter: [],
   // crop
   cropWidth: 100,
