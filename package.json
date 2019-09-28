@@ -1,0 +1,40 @@
+{
+  "name": "react-antd-super-upload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/es/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "prepare": "yarn run build",
+    "predeploy": "cd example && yarn install && yarn run build",
+    "deploy": "gh-pages -d example/build"
+  },
+  "dependencies": {
+    "react-image-crop": "8.3.0"
+  },
+  "peerDependencies": {
+    "antd": "^3.19.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "Keywords": [
+    "react",
+    "antd",
+    "sku",
+    "antd-sku",
+    "react-sku",
+    "sku-table"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitores/react-antd-super-upload.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bitores/react-antd-super-upload/issues"
+  },
+  "homepage": "https://github.com/bitores/react-antd-super-upload#readme"
+}
