@@ -412,6 +412,8 @@ Uploader.propTypes = {
   minHeight: PropTypes.number,
   maxWidth: PropTypes.number,
   maxHeight: PropTypes.number,
+  enCrop: PropTypes.bool,
+  filter: PropTypes.array,
 
   //crop
   cropWidth: PropTypes.number,
@@ -435,6 +437,8 @@ Uploader.defaultProps = {
   minHeight: 0,
   maxWidth: 0,
   maxHeight: 0,
+  enCrop: false,
+  filter: [],
   // crop
   cropWidth: 100,
   cropHeight: 100,
