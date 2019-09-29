@@ -1,12 +1,12 @@
-import React, { Component, Fragment } from 'react';
-import { Upload, Modal, message } from 'antd';
-import PropTypes from 'prop-types';
-import ReactCrop from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
+import React, { Component, Fragment } from "react";
+import { Upload, Modal, message } from "antd";
+import PropTypes from "prop-types";
+import ReactCrop from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
-import './index.less'
+import "./index.less";
 try {
-  new File([], '');
+  new File([], "");
 } catch (e) {
   // 兼容 IE new File()
   // import('canvas-toBlob').then(() => {
@@ -33,18 +33,6 @@ function getBase64(file) {
   });
 }
 
-function start(tasks) {
-  var result = []
-  return tasks.reduce((accumulator, item, index) => {
-    return accumulator.then(res => {
-      return item.then(res => {
-        result[index] = res
-        return index == tasks.length - 1 ? result : item
-      })
-    })
-  }, Promise.resolve())
-}
-
 // limit: 限制单次最多上传数量，nzMultiple 打开时有效；0 表示不限
 // size: 限制文件大小，单位：KB；0 表示不限
 // fileType: 限制文件类型，例如：image/png,image/jpeg,image/gif,image/bmp
@@ -52,13 +40,12 @@ function start(tasks) {
 // showButton 是否展示上传按钮
 
 export default class Uploader extends Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       // 预览
       previewVisible: false,
-      previewImage: '',
+      previewImage: "",
       // 正常数据
       fileList: props.value || [],
       showButton: true,
@@ -66,57 +53,66 @@ export default class Uploader extends Component {
       cropModalVisible: false,
       cropImageSrc: null,
       cropData: {}
-    }
+    };
 
     this.uploadRef = React.createRef();
 
     this.imageCount = 0;
     this.filters = [];
-    if (props.fileType) {
+    const { fileType, fileTypeErrorTip = "不支持该文件格式" } = props;
+    if (fileType) {
       this.filters.push({
-        name: 'type',
+        name: "type",
         fn: fileList => {
-          if (props.fileType.length === 0) {
+          if (fileType.length === 0) {
             return fileList;
           }
-          let types = props.fileType.split(',');
+          let types = fileType.split(",");
           let filterFiles = fileList.filter(f => types.indexOf(f.type) > -1);
 
           if (filterFiles.length !== fileList.length) {
-            message.error('文件格式不在 fileType 值中')
+            message.error(fileTypeErrorTip);
             return false;
           }
 
           return fileList;
         }
-      })
+      });
     }
 
-    if (props.size) {
+    const { enCrop = false, size, sizeErrorTip = "文件超出限定值" } = props;
+
+    if (size && enCrop === false) {
       this.filters.push({
-        name: 'size',
+        name: "size",
         fn: fileList => {
-          if (props.size === 0) {
+          if (size === 0) {
             return fileList;
           }
 
-          let filterFiles = fileList.filter(f => f.size <= props.size);
+          let filterFiles = fileList.filter(f => f.size <= size);
 
           if (filterFiles.length !== fileList.length) {
-            message.error('文件超出限定 size 值')
+            message.error(sizeErrorTip);
             return false;
           }
 
           return fileList;
         }
-      })
+      });
     }
 
-    const { minWidth = 0, minHeight = 0, maxWidth = 0, maxHeight = 0 } = props;
-    if (maxWidth || maxHeight || minWidth || minHeight) {
+    const {
+      minWidth = 0,
+      minHeight = 0,
+      maxWidth = 0,
+      maxHeight = 0,
+      whErrorTip = "文件宽高超不符合要求"
+    } = props;
+    if ((maxWidth || maxHeight || minWidth || minHeight) && enCrop === false) {
       this.filters.push({
-        name: 'check width height',
-        fn: (fileList) => {
+        name: "check width height",
+        fn: fileList => {
           return new Promise((resolve, reject) => {
             let filereader = new FileReader();
             filereader.onload = e => {
@@ -125,12 +121,14 @@ export default class Uploader extends Component {
               image.onload = function () {
                 const { naturalWidth, naturalHeight } = this;
 
-                if ((maxWidth != 0 && naturalWidth > maxWidth)
-                  || (minWidth != 0 && naturalWidth < minWidth)
-                  || (maxHeight != 0 && naturalHeight > maxHeight)
-                  || (minHeight != 0 && naturalHeight < minHeight)) {
-                  message.error('文件宽高超不符合要求')
-                  reject()
+                if (
+                  (maxWidth !== 0 && naturalWidth > maxWidth) ||
+                  (minWidth !== 0 && naturalWidth < minWidth) ||
+                  (maxHeight !== 0 && naturalHeight > maxHeight) ||
+                  (minHeight !== 0 && naturalHeight < minHeight)
+                ) {
+                  message.error(whErrorTip);
+                  reject();
                 } else {
                   resolve();
                 }
@@ -139,12 +137,12 @@ export default class Uploader extends Component {
               image.src = src;
             };
             filereader.readAsDataURL(fileList[0]);
-          })
+          });
         }
-      })
+      });
     }
 
-    this.filters.push(...(props.filter || []))
+    this.filters.push(...(props.filter || []));
   }
 
   handleCancelPreview = () => this.setState({ previewVisible: false });
@@ -155,7 +153,7 @@ export default class Uploader extends Component {
 
     this.setState({
       previewImage: file.url || file.preview,
-      previewVisible: true,
+      previewVisible: true
     });
   };
 
@@ -177,16 +175,19 @@ export default class Uploader extends Component {
     }
 
     // 获取裁切后的图片
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     ctx.drawImage(this.imageRef, x, y, width, height, 0, 0, width, height);
 
     const { name, type, uid } = this.originalFile;
-    canvas.toBlob(async (blob) => {
+    canvas.toBlob(async blob => {
       // 生成新图片
-      const croppedFile = new File([blob], name, { type, lastModified: Date.now() });
+      const croppedFile = new File([blob], name, {
+        type,
+        lastModified: Date.now()
+      });
       croppedFile.uid = uid;
 
       // 关闭弹窗
@@ -201,7 +202,7 @@ export default class Uploader extends Component {
         return;
       }
 
-      if (typeof response.then !== 'function') {
+      if (typeof response.then !== "function") {
         this.resolve(croppedFile);
         return;
       }
@@ -209,14 +210,15 @@ export default class Uploader extends Component {
       try {
         const croppedProcessedFile = await response;
         const fileType = Object.prototype.toString.call(croppedProcessedFile);
-        const useProcessedFile = fileType === '[object File]' || fileType === '[object Blob]';
+        const useProcessedFile =
+          fileType === "[object File]" || fileType === "[object Blob]";
 
         this.resolve(useProcessedFile ? croppedProcessedFile : croppedFile);
       } catch (err) {
         this.reject(err);
       }
     }, type);
-  }
+  };
 
   onCropClose = () => {
     this.imageRef = undefined;
@@ -225,14 +227,14 @@ export default class Uploader extends Component {
     this.setState({
       cropModalVisible: false,
       cropData: {}
-    })
-  }
+    });
+  };
 
-  onCropChange = (cropData) => {
-    this.setState({ cropData })
-  }
+  onCropChange = cropData => {
+    this.setState({ cropData });
+  };
 
-  onCropImageLoaded = (image) => {
+  onCropImageLoaded = image => {
     if (this.imageRef !== undefined) return;
 
     this.imageRef = image;
@@ -275,9 +277,9 @@ export default class Uploader extends Component {
       height = cropHeight;
     }
 
-    this.setState({ cropData: { unit: 'px', aspect, x, y, width, height } });
+    this.setState({ cropData: { unit: "px", aspect, x, y, width, height } });
     return false;
-  }
+  };
 
   render() {
     const { filters } = this;
@@ -288,7 +290,9 @@ export default class Uploader extends Component {
       fileList,
       showButton = true,
       //
-      cropModalVisible, cropImageSrc, cropData
+      cropModalVisible,
+      cropImageSrc,
+      cropData
     } = this.state;
     const {
       children,
@@ -300,118 +304,122 @@ export default class Uploader extends Component {
       // crop
       multiple,
       enCrop = false,
-      cropModalTitle, cropModalWidth, cropResize, cropResizeAndDrag,
+      cropModalTitle,
+      cropModalWidth,
+      cropResize,
+      cropResizeAndDrag,
       enDrag = false,
       ...uploadProp
     } = this.props;
 
     let UploadComponent = enDrag ? Dragger : Upload;
 
-    return <Fragment>
-      <UploadComponent
-        ref={this.uploadRef}
-        fileList={fileList}
-        multiple={enCrop ? false : multiple}
-        onChange={({ fileList }) => {
-          let needShowButton = true;
-          if (max == 0 || fileList.length < max) {
-            needShowButton = true;
-          } else {
-            needShowButton = false;
-          }
-          if (max !== 0) {
-            fileList.splice(max);
-          }
-
-          onChange && onChange(fileList)
-          this.setState({
-            fileList: fileList,
-            showButton: needShowButton
-          })
-        }}
-        beforeUpload={(file, fileList) => {
-          return new Promise((resolve, reject) => {
-
-            this.resolve = resolve;
-            this.reject = reject;
-
-            this.imageCount++;
-            let tasks = [];
-            for (let i = 0, len = filters.length; i < len; i++) {
-              let f = filters[i];
-              let r = f.fn([file]);
-
-              if (r instanceof Promise) {
-                tasks.push(r);
-              } else if (!!r === false) {
-                tasks.push(Promise.reject())
-              } else {
-                tasks.push(Promise.resolve())
-              }
+    return (
+      <Fragment>
+        <UploadComponent
+          ref={this.uploadRef}
+          fileList={fileList}
+          multiple={enCrop ? false : multiple}
+          onChange={({ fileList }) => {
+            let needShowButton = true;
+            if (max === 0 || fileList.length < max) {
+              needShowButton = true;
+            } else {
+              needShowButton = false;
+            }
+            if (max !== 0) {
+              fileList.splice(max);
             }
 
-            Promise.all(tasks).then(() => {
-              // 进行剪切控制
-              const { enCrop = false } = this.props;
-              if (enCrop) {
-                this.originalFile = file;
-                // 读取添加的图片
-                const reader = new FileReader();
-                reader.addEventListener('load', () => {
-                  this.setState({
-                    cropModalVisible: true,
-                    cropImageSrc: reader.result,
-                  });
-                });
-                reader.readAsDataURL(this.originalFile);
-              } else {
-                this.resolve()
+            onChange && onChange(fileList);
+            this.setState({
+              fileList: fileList,
+              showButton: needShowButton
+            });
+          }}
+          beforeUpload={(file, fileList) => {
+            return new Promise((resolve, reject) => {
+              this.resolve = resolve;
+              this.reject = reject;
+
+              this.imageCount++;
+              let tasks = [];
+              for (let i = 0, len = filters.length; i < len; i++) {
+                let f = filters[i];
+                let r = f.fn([file]);
+
+                if (r instanceof Promise) {
+                  tasks.push(r);
+                } else if (!!r === false) {
+                  tasks.push(Promise.reject());
+                } else {
+                  tasks.push(Promise.resolve());
+                }
               }
-            })
 
-
-          })
-
-        }}
-        onRemove={(file) => {
-          this.imageCount--;
-          onChange && onChange(this.state.fileList)
-          return true;
-        }}
-        onPreview={this.handlePreview}
-        {...uploadProp}
-      >
-        {showButton && children}
-      </UploadComponent>
-      <Modal
-        visible={cropModalVisible}
-        width={cropModalWidth}
-        onOk={this.onCropOk}
-        onCancel={this.onCropClose}
-        wrapClassName="antd-img-crop-modal"
-        title={cropModalTitle || '编辑图片'}
-        maskClosable={false}
-        destroyOnClose
-      >
-        {cropImageSrc && (
-          <ReactCrop
-            src={cropImageSrc}
-            crop={cropData}
-            locked={cropResize === false}
-            disabled={cropResizeAndDrag === false}
-            onImageLoaded={this.onCropImageLoaded}
-            onChange={this.onCropChange}
-            keepSelection
-          />
-        )}
-      </Modal>
-      <Modal visible={previewVisible} footer={null} onCancel={this.handleCancelPreview}>
-        <img alt="预览图片" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
-    </Fragment>
+              Promise.all(tasks).then(() => {
+                // 进行剪切控制
+                const { enCrop = false } = this.props;
+                if (enCrop) {
+                  this.originalFile = file;
+                  // 读取添加的图片
+                  const reader = new FileReader();
+                  reader.addEventListener("load", () => {
+                    this.setState({
+                      cropModalVisible: true,
+                      cropImageSrc: reader.result
+                    });
+                  });
+                  reader.readAsDataURL(this.originalFile);
+                } else {
+                  this.resolve();
+                }
+              });
+            });
+          }}
+          onRemove={file => {
+            this.imageCount--;
+            onChange && onChange(this.state.fileList);
+            return true;
+          }}
+          onPreview={this.handlePreview}
+          {...uploadProp}
+        >
+          {showButton && children}
+        </UploadComponent>
+        <Modal
+          visible={cropModalVisible}
+          width={cropModalWidth}
+          onOk={this.onCropOk}
+          onCancel={this.onCropClose}
+          wrapClassName="antd-img-crop-modal"
+          title={cropModalTitle || "编辑图片"}
+          maskClosable={false}
+          destroyOnClose
+        >
+          {cropImageSrc && (
+            <ReactCrop
+              src={cropImageSrc}
+              crop={cropData}
+              locked={cropResize === false}
+              disabled={cropResizeAndDrag === false}
+              onImageLoaded={this.onCropImageLoaded}
+              onChange={this.onCropChange}
+              keepSelection
+            />
+          )}
+        </Modal>
+        <Modal
+          visible={previewVisible}
+          footer={null}
+          onCancel={this.handleCancelPreview}
+        >
+          <img alt="预览图片" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
+      </Fragment>
+    );
   }
 }
-
 
 Uploader.propTypes = {
   //
@@ -437,12 +445,12 @@ Uploader.propTypes = {
   cropModalWidth: PropTypes.number,
   beforeCrop: PropTypes.func,
 
-  children: PropTypes.node,
+  children: PropTypes.node
 };
 
 Uploader.defaultProps = {
   //
-  fileType: '',
+  fileType: "",
   size: 0,
   max: 0,
   minWidth: 0,
@@ -459,6 +467,6 @@ Uploader.defaultProps = {
   cropResize: true,
   cropResizeAndDrag: true,
 
-  cropModalTitle: '图片裁剪',
-  cropModalWidth: 520,
+  cropModalTitle: "图片裁剪",
+  cropModalWidth: 520
 };
