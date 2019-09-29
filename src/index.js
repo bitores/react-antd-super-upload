@@ -65,7 +65,7 @@ export default class Uploader extends Component {
         name: "type",
         fn: fileList => {
           if (fileType.length === 0) {
-            return fileList;
+            return true;
           }
           let types = fileType.split(",");
           let filterFiles = fileList.filter(f => types.indexOf(f.type) > -1);
@@ -75,7 +75,7 @@ export default class Uploader extends Component {
             return false;
           }
 
-          return fileList;
+          return true;
         }
       });
     }
@@ -87,7 +87,7 @@ export default class Uploader extends Component {
         name: "size",
         fn: fileList => {
           if (size === 0) {
-            return fileList;
+            return true;
           }
 
           let filterFiles = fileList.filter(f => f.size <= size);
@@ -97,7 +97,7 @@ export default class Uploader extends Component {
             return false;
           }
 
-          return fileList;
+          return true;
         }
       });
     }
@@ -319,7 +319,7 @@ export default class Uploader extends Component {
         <UploadComponent
           ref={this.uploadRef}
           fileList={fileList}
-          multiple={enCrop ? false : multiple}
+          multiple={enCrop === true ? false : multiple}
           onChange={({ fileList }) => {
             let needShowButton = true;
             if (max === 0 || fileList.length < max) {
@@ -338,25 +338,24 @@ export default class Uploader extends Component {
             });
           }}
           beforeUpload={(file, fileList) => {
+            this.imageCount++;
+            let tasks = [];
+            for (let i = 0, len = filters.length; i < len; i++) {
+              let f = filters[i];
+              let r = f.fn([file]);
+
+              if (r instanceof Promise) {
+                tasks.push(r);
+              } else if (!!r === false) {
+                tasks.push(Promise.reject());
+              } else {
+                tasks.push(Promise.resolve());
+              }
+            }
+
             return new Promise((resolve, reject) => {
               this.resolve = resolve;
               this.reject = reject;
-
-              this.imageCount++;
-              let tasks = [];
-              for (let i = 0, len = filters.length; i < len; i++) {
-                let f = filters[i];
-                let r = f.fn([file]);
-
-                if (r instanceof Promise) {
-                  tasks.push(r);
-                } else if (!!r === false) {
-                  tasks.push(Promise.reject());
-                } else {
-                  tasks.push(Promise.resolve());
-                }
-              }
-
               Promise.all(tasks).then(() => {
                 // 进行剪切控制
                 const { enCrop = false } = this.props;
@@ -372,7 +371,7 @@ export default class Uploader extends Component {
                   });
                   reader.readAsDataURL(this.originalFile);
                 } else {
-                  this.resolve();
+                  resolve(file);
                 }
               });
             });
