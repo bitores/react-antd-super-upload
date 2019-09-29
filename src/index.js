@@ -298,6 +298,8 @@ export default class Uploader extends Component {
       beforeUpload,
       onRemove,
       // crop
+      multiple,
+      enCrop = false,
       cropModalTitle, cropModalWidth, cropResize, cropResizeAndDrag,
       enDrag = false,
       ...uploadProp
@@ -309,6 +311,7 @@ export default class Uploader extends Component {
       <UploadComponent
         ref={this.uploadRef}
         fileList={fileList}
+        multiple={enCrop ? false : multiple}
         onChange={({ fileList }) => {
           let needShowButton = true;
           if (max == 0 || fileList.length < max) {
