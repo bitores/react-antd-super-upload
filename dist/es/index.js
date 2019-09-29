@@ -153,7 +153,7 @@ var toConsumableArray = function (arr) {
 };
 
 try {
-  new File([], '');
+  new File([], "");
 } catch (e) {
   // 兼容 IE new File()
   // import('canvas-toBlob').then(() => {
@@ -195,247 +195,18 @@ var Uploader = function (_Component) {
   inherits(Uploader, _Component);
 
   function Uploader(props) {
-    var _this2 = this,
-        _this$filters;
+    var _this$filters;
 
     classCallCheck(this, Uploader);
 
     var _this = possibleConstructorReturn(this, (Uploader.__proto__ || Object.getPrototypeOf(Uploader)).call(this, props));
 
-    _this.handleCancelPreview = function () {
-      return _this.setState({ previewVisible: false });
-    };
-
-    _this.handlePreview = function () {
-      var _ref = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file) {
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                if (!(!file.url && !file.preview)) {
-                  _context.next = 4;
-                  break;
-                }
-
-                _context.next = 3;
-                return getBase64(file.originFileObj);
-
-              case 3:
-                file.preview = _context.sent;
-
-              case 4:
-
-                _this.setState({
-                  previewImage: file.url || file.preview,
-                  previewVisible: true
-                });
-
-              case 5:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, _this2);
-      }));
-
-      return function (_x) {
-        return _ref.apply(this, arguments);
-      };
-    }();
-
-    _this.onCropOk = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-      var cropData, x, y, width, height, canvas, ctx, _this$originalFile, name, type, uid;
-
-      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              cropData = _this.state.cropData;
-              x = cropData.x, y = cropData.y, width = cropData.width, height = cropData.height;
-
-              if (!(!width || !height)) {
-                _context3.next = 5;
-                break;
-              }
-
-              _this.onClose();
-              return _context3.abrupt('return');
-
-            case 5:
-
-              if (_this.scale !== undefined) {
-                x = x * _this.scale;
-                y = y * _this.scale;
-                width = width * _this.scale;
-                height = height * _this.scale;
-              }
-
-              // 获取裁切后的图片
-              canvas = document.createElement('canvas');
-
-              canvas.width = width;
-              canvas.height = height;
-              ctx = canvas.getContext('2d');
-
-              ctx.drawImage(_this.imageRef, x, y, width, height, 0, 0, width, height);
-
-              _this$originalFile = _this.originalFile, name = _this$originalFile.name, type = _this$originalFile.type, uid = _this$originalFile.uid;
-
-              canvas.toBlob(function () {
-                var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(blob) {
-                  var croppedFile, _this$props$beforeUpl, beforeUpload, response, croppedProcessedFile, fileType, useProcessedFile;
-
-                  return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                    while (1) {
-                      switch (_context2.prev = _context2.next) {
-                        case 0:
-                          // 生成新图片
-                          croppedFile = new File([blob], name, { type: type, lastModified: Date.now() });
-
-                          croppedFile.uid = uid;
-
-                          // 关闭弹窗
-                          _this.onCropClose();
-
-                          _this$props$beforeUpl = _this.props.beforeUpload, beforeUpload = _this$props$beforeUpl === undefined ? function () {
-                            return true;
-                          } : _this$props$beforeUpl;
-                          // 调用 beforeUpload
-
-                          response = beforeUpload(croppedFile, [croppedFile]);
-
-                          if (!(response === false)) {
-                            _context2.next = 8;
-                            break;
-                          }
-
-                          _this.reject();
-                          return _context2.abrupt('return');
-
-                        case 8:
-                          if (!(typeof response.then !== 'function')) {
-                            _context2.next = 11;
-                            break;
-                          }
-
-                          _this.resolve(croppedFile);
-                          return _context2.abrupt('return');
-
-                        case 11:
-                          _context2.prev = 11;
-                          _context2.next = 14;
-                          return response;
-
-                        case 14:
-                          croppedProcessedFile = _context2.sent;
-                          fileType = Object.prototype.toString.call(croppedProcessedFile);
-                          useProcessedFile = fileType === '[object File]' || fileType === '[object Blob]';
-
-
-                          _this.resolve(useProcessedFile ? croppedProcessedFile : croppedFile);
-                          _context2.next = 23;
-                          break;
-
-                        case 20:
-                          _context2.prev = 20;
-                          _context2.t0 = _context2['catch'](11);
-
-                          _this.reject(_context2.t0);
-
-                        case 23:
-                        case 'end':
-                          return _context2.stop();
-                      }
-                    }
-                  }, _callee2, _this2, [[11, 20]]);
-                }));
-
-                return function (_x2) {
-                  return _ref3.apply(this, arguments);
-                };
-              }(), type);
-
-            case 13:
-            case 'end':
-              return _context3.stop();
-          }
-        }
-      }, _callee3, _this2);
-    }));
-
-    _this.onCropClose = function () {
-      _this.imageRef = undefined;
-      _this.scale = undefined;
-
-      _this.setState({
-        cropModalVisible: false,
-        cropData: {}
-      });
-    };
-
-    _this.onCropChange = function (cropData) {
-      _this.setState({ cropData: cropData });
-    };
-
-    _this.onCropImageLoaded = function (image) {
-      if (_this.imageRef !== undefined) return;
-
-      _this.imageRef = image;
-      var _this$imageRef = _this.imageRef,
-          naturalWidth = _this$imageRef.naturalWidth,
-          naturalHeight = _this$imageRef.naturalHeight;
-
-      var imgWidth = naturalWidth;
-      var imgHeight = naturalHeight;
-
-      var _this$props = _this.props,
-          cropModalWidth = _this$props.cropModalWidth,
-          cropWidth = _this$props.cropWidth,
-          cropHeight = _this$props.cropHeight,
-          useRatio = _this$props.useRatio;
-
-
-      var modalBodyWidth = cropModalWidth - 24 * 2;
-      if (naturalWidth > modalBodyWidth) {
-        imgWidth = modalBodyWidth;
-        _this.scale = naturalWidth / imgWidth;
-        imgHeight = naturalHeight / _this.scale;
-      }
-
-      var aspect = cropWidth / cropHeight;
-      var x = void 0;
-      var y = void 0;
-      var width = void 0;
-      var height = void 0;
-
-      if (useRatio === true) {
-        var naturalAspect = naturalWidth / naturalHeight;
-        if (naturalAspect > aspect) {
-          y = 0;
-          height = imgHeight;
-          width = height * aspect;
-          x = (imgWidth - width) / 2;
-        } else {
-          x = 0;
-          width = imgWidth;
-          height = width / aspect;
-          y = (imgHeight - height) / 2;
-        }
-      } else {
-        x = (imgWidth - cropWidth) / 2;
-        y = (imgHeight - cropHeight) / 2;
-        width = cropWidth;
-        height = cropHeight;
-      }
-
-      _this.setState({ cropData: { unit: 'px', aspect: aspect, x: x, y: y, width: width, height: height } });
-      return false;
-    };
+    _initialiseProps.call(_this);
 
     _this.state = {
       // 预览
       previewVisible: false,
-      previewImage: '',
+      previewImage: "",
       // 正常数据
       fileList: props.value || [],
       showButton: true,
@@ -449,46 +220,57 @@ var Uploader = function (_Component) {
 
     _this.imageCount = 0;
     _this.filters = [];
-    if (props.fileType) {
+    var fileType = props.fileType,
+        _props$fileTypeErrorT = props.fileTypeErrorTip,
+        fileTypeErrorTip = _props$fileTypeErrorT === undefined ? "不支持该文件格式" : _props$fileTypeErrorT;
+
+    if (fileType) {
       _this.filters.push({
-        name: 'type',
+        name: "type",
         fn: function fn(fileList) {
-          if (props.fileType.length === 0) {
-            return fileList;
+          if (fileType.length === 0) {
+            return true;
           }
-          var types = props.fileType.split(',');
+          var types = fileType.split(",");
           var filterFiles = fileList.filter(function (f) {
             return types.indexOf(f.type) > -1;
           });
 
           if (filterFiles.length !== fileList.length) {
-            _message.error('文件格式不在 fileType 值中');
+            _message.error(fileTypeErrorTip);
             return false;
           }
 
-          return fileList;
+          return true;
         }
       });
     }
 
-    if (props.size) {
+    var _props$enCrop = props.enCrop,
+        enCrop = _props$enCrop === undefined ? false : _props$enCrop,
+        size = props.size,
+        _props$sizeErrorTip = props.sizeErrorTip,
+        sizeErrorTip = _props$sizeErrorTip === undefined ? "文件超出限定值" : _props$sizeErrorTip;
+
+
+    if (size && enCrop === false) {
       _this.filters.push({
-        name: 'size',
+        name: "size",
         fn: function fn(fileList) {
-          if (props.size === 0) {
-            return fileList;
+          if (size === 0) {
+            return true;
           }
 
           var filterFiles = fileList.filter(function (f) {
-            return f.size <= props.size;
+            return f.size <= size;
           });
 
           if (filterFiles.length !== fileList.length) {
-            _message.error('文件超出限定 size 值');
+            _message.error(sizeErrorTip);
             return false;
           }
 
-          return fileList;
+          return true;
         }
       });
     }
@@ -500,11 +282,13 @@ var Uploader = function (_Component) {
         _props$maxWidth = props.maxWidth,
         maxWidth = _props$maxWidth === undefined ? 0 : _props$maxWidth,
         _props$maxHeight = props.maxHeight,
-        maxHeight = _props$maxHeight === undefined ? 0 : _props$maxHeight;
+        maxHeight = _props$maxHeight === undefined ? 0 : _props$maxHeight,
+        _props$whErrorTip = props.whErrorTip,
+        whErrorTip = _props$whErrorTip === undefined ? "文件宽高超不符合要求" : _props$whErrorTip;
 
-    if (maxWidth || maxHeight || minWidth || minHeight) {
+    if ((maxWidth || maxHeight || minWidth || minHeight) && enCrop === false) {
       _this.filters.push({
-        name: 'check width height',
+        name: "check width height",
         fn: function fn(fileList) {
           return new Promise(function (resolve, reject) {
             var filereader = new FileReader();
@@ -516,8 +300,8 @@ var Uploader = function (_Component) {
                     naturalHeight = this.naturalHeight;
 
 
-                if (maxWidth != 0 && naturalWidth > maxWidth || minWidth != 0 && naturalWidth < minWidth || maxHeight != 0 && naturalHeight > maxHeight || minHeight != 0 && naturalHeight < minHeight) {
-                  _message.error('文件宽高超不符合要求');
+                if (maxWidth !== 0 && naturalWidth > maxWidth || minWidth !== 0 && naturalWidth < minWidth || maxHeight !== 0 && naturalHeight > maxHeight || minHeight !== 0 && naturalHeight < minHeight) {
+                  _message.error(whErrorTip);
                   reject();
                 } else {
                   resolve();
@@ -540,9 +324,9 @@ var Uploader = function (_Component) {
 
 
   createClass(Uploader, [{
-    key: 'render',
+    key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var filters = this.filters;
       var _state = this.state,
@@ -562,26 +346,34 @@ var Uploader = function (_Component) {
           _onChange = _props.onChange,
           beforeUpload = _props.beforeUpload,
           onRemove = _props.onRemove,
+          multiple = _props.multiple,
+          _props$enCrop2 = _props.enCrop,
+          enCrop = _props$enCrop2 === undefined ? false : _props$enCrop2,
           cropModalTitle = _props.cropModalTitle,
           cropModalWidth = _props.cropModalWidth,
           cropResize = _props.cropResize,
           cropResizeAndDrag = _props.cropResizeAndDrag,
-          uploadProp = objectWithoutProperties(_props, ['children', 'max', 'filter', 'onChange', 'beforeUpload', 'onRemove', 'cropModalTitle', 'cropModalWidth', 'cropResize', 'cropResizeAndDrag']);
+          _props$enDrag = _props.enDrag,
+          enDrag = _props$enDrag === undefined ? false : _props$enDrag,
+          uploadProp = objectWithoutProperties(_props, ["children", "max", "filter", "onChange", "beforeUpload", "onRemove", "multiple", "enCrop", "cropModalTitle", "cropModalWidth", "cropResize", "cropResizeAndDrag", "enDrag"]);
 
+
+      var UploadComponent = enDrag ? Dragger : _Upload;
 
       return React.createElement(
         Fragment,
         null,
         React.createElement(
-          _Upload,
+          UploadComponent,
           _extends({
             ref: this.uploadRef,
             fileList: fileList,
-            onChange: function onChange(_ref4) {
-              var fileList = _ref4.fileList;
+            multiple: enCrop === true ? false : multiple,
+            onChange: function onChange(_ref) {
+              var fileList = _ref.fileList;
 
               var needShowButton = true;
-              if (max == 0 || fileList.length < max) {
+              if (max === 0 || fileList.length < max) {
                 needShowButton = true;
               } else {
                 needShowButton = false;
@@ -591,57 +383,55 @@ var Uploader = function (_Component) {
               }
 
               _onChange && _onChange(fileList);
-              _this3.setState({
+              _this2.setState({
                 fileList: fileList,
                 showButton: needShowButton
               });
             },
             beforeUpload: function beforeUpload(file, fileList) {
-              return new Promise(function (resolve, reject) {
+              _this2.imageCount++;
+              var tasks = [];
+              for (var i = 0, len = filters.length; i < len; i++) {
+                var f = filters[i];
+                var r = f.fn([file]);
 
-                _this3.resolve = resolve;
-                _this3.reject = reject;
-
-                _this3.imageCount++;
-                var tasks = [];
-                for (var i = 0, len = filters.length; i < len; i++) {
-                  var f = filters[i];
-                  var r = f.fn([file]);
-
-                  if (r instanceof Promise) {
-                    tasks.push(r);
-                  } else if (!!r === false) {
-                    tasks.push(Promise.reject());
-                  } else {
-                    tasks.push(Promise.resolve());
-                  }
+                if (r instanceof Promise) {
+                  tasks.push(r);
+                } else if (!!r === false) {
+                  tasks.push(Promise.reject());
+                } else {
+                  tasks.push(Promise.resolve());
                 }
+              }
 
+              return new Promise(function (resolve, reject) {
+                _this2.resolve = resolve;
+                _this2.reject = reject;
                 Promise.all(tasks).then(function () {
                   // 进行剪切控制
-                  var _props$enCrop = _this3.props.enCrop,
-                      enCrop = _props$enCrop === undefined ? false : _props$enCrop;
+                  var _props$enCrop3 = _this2.props.enCrop,
+                      enCrop = _props$enCrop3 === undefined ? false : _props$enCrop3;
 
                   if (enCrop) {
-                    _this3.originalFile = file;
+                    _this2.originalFile = file;
                     // 读取添加的图片
                     var reader = new FileReader();
-                    reader.addEventListener('load', function () {
-                      _this3.setState({
+                    reader.addEventListener("load", function () {
+                      _this2.setState({
                         cropModalVisible: true,
                         cropImageSrc: reader.result
                       });
                     });
-                    reader.readAsDataURL(_this3.originalFile);
+                    reader.readAsDataURL(_this2.originalFile);
                   } else {
-                    _this3.resolve();
+                    resolve(file);
                   }
                 });
               });
             },
             onRemove: function onRemove(file) {
-              _this3.imageCount--;
-              _onChange && _onChange(_this3.state.fileList);
+              _this2.imageCount--;
+              _onChange && _onChange(_this2.state.fileList);
               return true;
             },
             onPreview: this.handlePreview
@@ -655,8 +445,8 @@ var Uploader = function (_Component) {
             width: cropModalWidth,
             onOk: this.onCropOk,
             onCancel: this.onCropClose,
-            wrapClassName: 'antd-img-crop-modal',
-            title: cropModalTitle || '编辑图片',
+            wrapClassName: "antd-img-crop-modal",
+            title: cropModalTitle || "编辑图片",
             maskClosable: false,
             destroyOnClose: true
           },
@@ -672,14 +462,255 @@ var Uploader = function (_Component) {
         ),
         React.createElement(
           _Modal,
-          { visible: previewVisible, footer: null, onCancel: this.handleCancelPreview },
-          React.createElement('img', { alt: '\u9884\u89C8\u56FE\u7247', style: { width: '100%' }, src: previewImage })
+          {
+            visible: previewVisible,
+            footer: null,
+            onCancel: this.handleCancelPreview
+          },
+          React.createElement("img", { alt: "\u9884\u89C8\u56FE\u7247", style: { width: "100%" }, src: previewImage })
         )
       );
     }
   }]);
   return Uploader;
 }(Component);
+
+var _initialiseProps = function _initialiseProps() {
+  var _this3 = this;
+
+  this.handleCancelPreview = function () {
+    return _this3.setState({ previewVisible: false });
+  };
+
+  this.handlePreview = function () {
+    var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file) {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (!(!file.url && !file.preview)) {
+                _context.next = 4;
+                break;
+              }
+
+              _context.next = 3;
+              return getBase64(file.originFileObj);
+
+            case 3:
+              file.preview = _context.sent;
+
+            case 4:
+
+              _this3.setState({
+                previewImage: file.url || file.preview,
+                previewVisible: true
+              });
+
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, _this3);
+    }));
+
+    return function (_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  this.onCropOk = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+    var cropData, x, y, width, height, canvas, ctx, _originalFile, name, type, uid;
+
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            cropData = _this3.state.cropData;
+            x = cropData.x, y = cropData.y, width = cropData.width, height = cropData.height;
+
+            if (!(!width || !height)) {
+              _context3.next = 5;
+              break;
+            }
+
+            _this3.onClose();
+            return _context3.abrupt("return");
+
+          case 5:
+
+            if (_this3.scale !== undefined) {
+              x = x * _this3.scale;
+              y = y * _this3.scale;
+              width = width * _this3.scale;
+              height = height * _this3.scale;
+            }
+
+            // 获取裁切后的图片
+            canvas = document.createElement("canvas");
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx = canvas.getContext("2d");
+
+            ctx.drawImage(_this3.imageRef, x, y, width, height, 0, 0, width, height);
+
+            _originalFile = _this3.originalFile, name = _originalFile.name, type = _originalFile.type, uid = _originalFile.uid;
+
+            canvas.toBlob(function () {
+              var _ref4 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(blob) {
+                var croppedFile, _props$beforeUpload, beforeUpload, response, croppedProcessedFile, fileType, useProcessedFile;
+
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        // 生成新图片
+                        croppedFile = new File([blob], name, {
+                          type: type,
+                          lastModified: Date.now()
+                        });
+
+                        croppedFile.uid = uid;
+
+                        // 关闭弹窗
+                        _this3.onCropClose();
+
+                        _props$beforeUpload = _this3.props.beforeUpload, beforeUpload = _props$beforeUpload === undefined ? function () {
+                          return true;
+                        } : _props$beforeUpload;
+                        // 调用 beforeUpload
+
+                        response = beforeUpload(croppedFile, [croppedFile]);
+
+                        if (!(response === false)) {
+                          _context2.next = 8;
+                          break;
+                        }
+
+                        _this3.reject();
+                        return _context2.abrupt("return");
+
+                      case 8:
+                        if (!(typeof response.then !== "function")) {
+                          _context2.next = 11;
+                          break;
+                        }
+
+                        _this3.resolve(croppedFile);
+                        return _context2.abrupt("return");
+
+                      case 11:
+                        _context2.prev = 11;
+                        _context2.next = 14;
+                        return response;
+
+                      case 14:
+                        croppedProcessedFile = _context2.sent;
+                        fileType = Object.prototype.toString.call(croppedProcessedFile);
+                        useProcessedFile = fileType === "[object File]" || fileType === "[object Blob]";
+
+
+                        _this3.resolve(useProcessedFile ? croppedProcessedFile : croppedFile);
+                        _context2.next = 23;
+                        break;
+
+                      case 20:
+                        _context2.prev = 20;
+                        _context2.t0 = _context2["catch"](11);
+
+                        _this3.reject(_context2.t0);
+
+                      case 23:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, _this3, [[11, 20]]);
+              }));
+
+              return function (_x2) {
+                return _ref4.apply(this, arguments);
+              };
+            }(), type);
+
+          case 13:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, _this3);
+  }));
+
+  this.onCropClose = function () {
+    _this3.imageRef = undefined;
+    _this3.scale = undefined;
+
+    _this3.setState({
+      cropModalVisible: false,
+      cropData: {}
+    });
+  };
+
+  this.onCropChange = function (cropData) {
+    _this3.setState({ cropData: cropData });
+  };
+
+  this.onCropImageLoaded = function (image) {
+    if (_this3.imageRef !== undefined) return;
+
+    _this3.imageRef = image;
+    var _imageRef = _this3.imageRef,
+        naturalWidth = _imageRef.naturalWidth,
+        naturalHeight = _imageRef.naturalHeight;
+
+    var imgWidth = naturalWidth;
+    var imgHeight = naturalHeight;
+
+    var _props2 = _this3.props,
+        cropModalWidth = _props2.cropModalWidth,
+        cropWidth = _props2.cropWidth,
+        cropHeight = _props2.cropHeight,
+        useRatio = _props2.useRatio;
+
+
+    var modalBodyWidth = cropModalWidth - 24 * 2;
+    if (naturalWidth > modalBodyWidth) {
+      imgWidth = modalBodyWidth;
+      _this3.scale = naturalWidth / imgWidth;
+      imgHeight = naturalHeight / _this3.scale;
+    }
+
+    var aspect = cropWidth / cropHeight;
+    var x = void 0;
+    var y = void 0;
+    var width = void 0;
+    var height = void 0;
+
+    if (useRatio === true) {
+      var naturalAspect = naturalWidth / naturalHeight;
+      if (naturalAspect > aspect) {
+        y = 0;
+        height = imgHeight;
+        width = height * aspect;
+        x = (imgWidth - width) / 2;
+      } else {
+        x = 0;
+        width = imgWidth;
+        height = width / aspect;
+        y = (imgHeight - height) / 2;
+      }
+    } else {
+      x = (imgWidth - cropWidth) / 2;
+      y = (imgHeight - cropHeight) / 2;
+      width = cropWidth;
+      height = cropHeight;
+    }
+
+    _this3.setState({ cropData: { unit: "px", aspect: aspect, x: x, y: y, width: width, height: height } });
+    return false;
+  };
+};
 
 
 Uploader.propTypes = {
@@ -692,6 +723,7 @@ Uploader.propTypes = {
   maxWidth: PropTypes.number,
   maxHeight: PropTypes.number,
   enCrop: PropTypes.bool,
+  enDrag: PropTypes.bool,
   filter: PropTypes.array,
 
   //crop
@@ -710,7 +742,7 @@ Uploader.propTypes = {
 
 Uploader.defaultProps = {
   //
-  fileType: '',
+  fileType: "",
   size: 0,
   max: 0,
   minWidth: 0,
@@ -718,6 +750,7 @@ Uploader.defaultProps = {
   maxWidth: 0,
   maxHeight: 0,
   enCrop: false,
+  enDrag: false,
   filter: [],
   // crop
   cropWidth: 100,
@@ -726,7 +759,7 @@ Uploader.defaultProps = {
   cropResize: true,
   cropResizeAndDrag: true,
 
-  cropModalTitle: '图片裁剪',
+  cropModalTitle: "图片裁剪",
   cropModalWidth: 520
 };
 
