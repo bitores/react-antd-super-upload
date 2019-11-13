@@ -1,6 +1,6 @@
 {
   "name": "react-antd-super-upload",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/es/index.js",
@@ -10,7 +10,7 @@
     "prepare": "yarn run build",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build",
-    "prepublish": "roollup -c"
+    "prepublish": "rollup -c"
   },
   "dependencies": {
     "react-image-crop": "8.3.0"

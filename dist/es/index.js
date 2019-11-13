@@ -334,7 +334,6 @@ var Uploader = function (_Component) {
           previewImage = _state.previewImage,
           fileList = _state.fileList,
           _state$showButton = _state.showButton,
-          showButton = _state$showButton === undefined ? true : _state$showButton,
           cropModalVisible = _state.cropModalVisible,
           cropImageSrc = _state.cropImageSrc,
           cropData = _state.cropData;
@@ -359,7 +358,6 @@ var Uploader = function (_Component) {
 
 
       var UploadComponent = enDrag ? Dragger : _Upload;
-
       return React.createElement(
         Fragment,
         null,
@@ -436,7 +434,7 @@ var Uploader = function (_Component) {
             },
             onPreview: this.handlePreview
           }, uploadProp),
-          showButton && children
+          (max == 0 || fileList.length < max) && children
         ),
         React.createElement(
           _Modal,

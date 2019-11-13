@@ -313,7 +313,6 @@ export default class Uploader extends Component {
     } = this.props;
 
     let UploadComponent = enDrag ? Dragger : Upload;
-
     return (
       <Fragment>
         <UploadComponent
@@ -321,7 +320,7 @@ export default class Uploader extends Component {
           fileList={fileList}
           multiple={enCrop === true ? false : multiple}
           onChange={({ fileList }) => {
-            let needShowButton = true;
+            let needShowButton = true
             if (max === 0 || fileList.length < max) {
               needShowButton = true;
             } else {
@@ -384,7 +383,7 @@ export default class Uploader extends Component {
           onPreview={this.handlePreview}
           {...uploadProp}
         >
-          {showButton && children}
+          {(max == 0 || fileList.length < max) && children}
         </UploadComponent>
         <Modal
           visible={cropModalVisible}
