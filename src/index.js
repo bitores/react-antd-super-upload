@@ -145,6 +145,15 @@ export default class Uploader extends Component {
     this.filters.push(...(props.filter || []));
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value !== this.props.value) {
+      // doSomething
+      this.setState({
+        fileList: nextProps.value
+      })
+    }
+  }
+
   handleCancelPreview = () => this.setState({ previewVisible: false });
   handlePreview = async file => {
     if (!file.url && !file.preview) {

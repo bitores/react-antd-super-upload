@@ -325,10 +325,20 @@ var Uploader = function (_Component) {
     return _this;
   }
 
-  //
-
-
   createClass(Uploader, [{
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      if (nextProps.value !== this.props.value) {
+        // doSomething
+        this.setState({
+          fileList: nextProps.value
+        });
+      }
+    }
+
+    //
+
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
