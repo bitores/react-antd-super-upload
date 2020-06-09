@@ -296,7 +296,7 @@ export default class Uploader extends Component {
       previewVisible,
       previewImage,
       //
-      fileList,
+      fileList = [],
       showButton = true,
       //
       cropModalVisible,
